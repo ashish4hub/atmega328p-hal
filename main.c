@@ -3,6 +3,7 @@
 #include "timer.h"
 #include <string.h>
 #include <avr/interrupt.h>
+#include <stdint.h>
 int main(void){
     uart_init();
     rx_ini();
