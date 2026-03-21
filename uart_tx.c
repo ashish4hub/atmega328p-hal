@@ -28,14 +28,7 @@ void uart_print(const char *s){
     uart_put_tx(*s++);
   }
 }
-void time_setup(void){
-  TCCR0A |= (1 << WGM01);
-  TCCR0B |= (1 << CS00) | (1 << CS01);
-  OCR0A = 249; // 16MHz / 64 = 250kHz  --> 250 timer counts = 1ms tick
-  TIMSK0 |= (1 << OCIE0A);
-}
 void uart_init(void){
-  time_setup();
   UBRR0H = (BRC >> 8);
   UBRR0L = BRC;
   UCSR0B = (1 << TXEN0);
