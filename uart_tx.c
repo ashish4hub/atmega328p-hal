@@ -11,7 +11,6 @@
 volatile uint8_t Tx_buff[Tx_buffer_size];
 volatile uint8_t tx_tail = 0;
 volatile uint8_t tx_head = 0;
-volatile uint32_t tick = 0;
 
 void uart_put_tx(char c){
   uint8_t next = (tx_head +1 ) % Tx_buffer_size;
@@ -51,8 +50,4 @@ ISR(USART_UDRE_vect)
         UDR0 = Tx_buff[tx_tail];
         tx_tail = (tx_tail + 1) % Tx_buffer_size;
     }
-}
-//Timer interrupt function
-ISR(TIMER0_COMPA_vect){
-  tick++;
 }
