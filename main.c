@@ -6,6 +6,7 @@ int main(void){
     uart_init();
     rx_ini();
     DDRB |= (1 << PB5);
+    DDRB |= (1 << PB4);
     sei();
     while(1){
         uart_print("hello world!\r\n");
@@ -14,6 +15,7 @@ int main(void){
             {
                 uart_print("uart setup done!");
                 PORTB |= (1 << PB5);
+                PORTB |= (1 << PB4);
             }
             
         }
