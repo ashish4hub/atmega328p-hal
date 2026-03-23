@@ -5,7 +5,7 @@ OBJCOPY = avr-objcopy
 CFLAGS = -mmcu=$(MCU) -Os -Wall -DF_CPU=$(F_CPU)
 
 TARGET = main
-SRC    = main.c uart_tx.c uart_rx.c timer.c
+SRC    = main.c uart/uart_tx.c uart/uart_rx.c timer/timer.c
 # This converts the .c list into a .o list
 OBJ    = $(SRC:.c=.o)
 
