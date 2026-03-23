@@ -10,4 +10,13 @@ void timer_config(void){
 ISR(TIMER0_COMPA_vect){
     tick++;
 }
+uint8_t nb_wait_ms(uint32_t time){
+    tick = 0;
+    if(tick == time){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
 

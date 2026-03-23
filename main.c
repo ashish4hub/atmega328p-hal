@@ -19,11 +19,9 @@ int main(void){
                 uart_print("uart setup done!");
                 PORTB |= (1 << PB5);
                 PORTB |= (1 << PB4);
-                tick = 0;
-                if(tick >= 1000){
+                if(nb_wait_ms(1000)){
                     PORTB &= ~(1 << PB5);
                     PORTB &= ~(1 << PB4);
-                    tick = 0;
                 }
             }
             
