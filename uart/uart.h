@@ -1,16 +1,24 @@
-#ifndef UART_RX_H
-#define UART_RX_H
+#ifndef UART_H
+#define UART_H
 
 #include <avr/io.h>
 #include <stdint.h>
 
+#define Tx_buffer_size 64
 #define Rx_buffer_size 64
 #define line_size 32
- uint8_t uart_rx_avail(void);
+
+ void uart_put_tx(char c);
+ void uart_print(const char *s);
+ void uart_init(void);
+ int8_t uart_rx_avail(void);
  char uart_get_data(void);
  uint8_t read_line(void);
  void rx_ini(void);
 
+ extern volatile uint8_t Tx_buff[Tx_buffer_size];
+ extern volatile uint8_t tx_tail;
+ extern volatile uint8_t tx_head;
  extern volatile uint8_t rx_buff[Tx_buffer_size];
  extern volatile uint8_t rx_tail;
  extern volatile uint8_t rx_head;
