@@ -4,8 +4,9 @@
 #include <avr/io.h>
 #include <stdint.h>
 
-void timer_config(void);
-uint8_t nb_wait_ms(uint32_t time);
+void timer_ini(void);
+uint8_t get_ticks (void);
+uint8_t nb_wait_ms(uint32_t *prv_time ,uint32_t time);
 
 extern volatile uint32_t tick;
 
