@@ -10,21 +10,12 @@ int main(void){
     DDRB |= (1 << PB5);
     DDRB |= (1 << PB4);
     sei();
+    wait = get_ticks();
 
     while(1){
-        uart_print("hello world!\r\n");
-        if(read_line()){
-            if (strcmp(line, "hello") == 0)
-            {
-                uart_print("uart setup done!");
-                PORTB |= (1 << PB5);
-                PORTB |= (1 << PB4);
-                if(nb_wait_ms(&wait,1000)){
-                    PORTB &= ~(1 << PB5);
-                    PORTB &= ~(1 << PB4);
-                }
-            }
-            
+        if(nb_wait_ms(&wait,1000)){
+            uart_print("Hello world!\r\n");
+            PORTB ^= (1 << PB5);
         }
     }
     return 0;
