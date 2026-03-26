@@ -22,7 +22,7 @@ uint32_t get_ticks(void){
 uint8_t nb_wait_ms(uint32_t *prv_time,uint32_t time){
     uint32_t now = get_ticks();
     if(now - *prv_time >=  time){
-        *prv_time =  now;      // Update current time
+        *prv_time += time;      // Update current time
         return 1;   // Time reached
     }
     return 0;      // Time not reached (still waiting)
