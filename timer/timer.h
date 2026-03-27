@@ -1,7 +1,6 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <avr/io.h>
 #include <stdint.h>
 
 void timer_ini(void);
