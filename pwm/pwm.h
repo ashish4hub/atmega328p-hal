@@ -8,6 +8,6 @@ typedef enum {
 }pwm_channel_t;
 
 void pwm_init(pwm_channel_t chnl, uint32_t freq);  /* Initialize pwm with desired frequency and PIN */
-void pwm_set(pwm_channel_t ch, uint32_t duty);     /* Set pin (PB1 or PB2), set duty cycle (0 --> 1000)*/
+void pwm_set(pwm_channel_t ch, uint32_t duty_percent);     /* Set pin (PB1 or PB2), set duty cycle (0 --> 1000)*/
 
 #endif
