@@ -3,10 +3,10 @@
 volatile uint32_t tick = 0;
 //Timer0 for 1ms interrupt
 void timer_ini(void){
-    TCCR0A |= (1 << WGM01);
-    TCCR0B |= (1 << CS00) | (1 << CS01);    //Prescaler 64
+    TCCR0A = (1 << WGM01);
+    TCCR0B = (1 << CS00) | (1 << CS01);    //Prescaler 64
     OCR0A = 249;       // 1ms (16000000 / 64 / 1000 - 1)
-    TIMSK0 |= (1 << OCIE0A);    // Enable compare interrupt
+    TIMSK0 = (1 << OCIE0A);    // Enable compare interrupt
 }
 // ISR increament global tick
 ISR(TIMER0_COMPA_vect){
