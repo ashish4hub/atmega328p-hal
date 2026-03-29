@@ -6,6 +6,9 @@
 #include<avr/interrupt.h>
 #include<stdint.h>
 
+static uint8_t ch1a_enb = 0;
+static uint8_t ch1b_enb = 0;
+
 /* Channels */
 typedef enum {
     pwm_CH1A,  /* PB1 */
@@ -49,6 +52,8 @@ void pwm_init(uint32_t freq){    /* PWM Initialisation and TOP (ICR1) calculatio
     if(freq == 0){               /* Frequency edge case */
         return;
     }
+    ch1a_enb = 0;
+    ch1b_enb = 0;
     uint8_t cs_bits;
     if(!pwm_compute(freq, &pwm_top, &cs_bits)){
         return;;
@@ -60,21 +65,32 @@ void pwm_init(uint32_t freq){    /* PWM Initialisation and TOP (ICR1) calculatio
 
 /*PWM channel (pin) selection */
 void pwm_enb_channel(pwm_channel_t channel){
+
     if(channel == pwm_CH1A){
-        DDRB |= (1 << PB1);
-        TCCR1A |= (1 << COM1A1);
+        if(!ch1a_enb){
+            DDRB |= (1 << PB1);
+            TCCR1A |= (1 << COM1A1);
+            ch1a_enb = 1;
+        }
     }
     else if (channel == pwm_CH1B)
     {
-        DDRB |= (1 << PB2);
-        TCCR1A |= (1 << COM1B1);
+        if(!ch1b_enb){
+            DDRB |= (1 << PB2);
+            TCCR1A |= (1 << COM1B1);
+            ch1b_enb = 1;
+        }
     }
 }
-void pwm_set(pwm_channel_t ch, uint32_t duty_percent){   /*PWM channel and duty percent to be passed*/
+
+/* Dutycycle (percent) assignment according to channel */
+void pwm_set(pwm_channel_t ch, uint32_t duty_percent){
+
+    pwm_enb_channel(ch);
     
     if(duty_percent > 100) duty_percent = 100; 
     
-    uint16_t duty = (pwm_top * duty_percent) / 100;    /*Duty percentage to OCR1x value conversion*/
+    uint16_t duty = (pwm_top * duty_percent) / 100;    /* Duty percentage to OCR1x value conversion */
     
     if(ch == pwm_CH1A){
         OCR1A = duty;
