@@ -9,7 +9,7 @@
 int main(void){
 
     uart_init(9600);
-    pwm_init(1000);   // Frequency = 1000
+    pwm_init(1000,pwm_TIMER1);   // Frequency = 1000
     timer_ini();
 
     uint32_t wait = get_ticks();  /* Time stamps for timing logic in pwm and timer driver */
