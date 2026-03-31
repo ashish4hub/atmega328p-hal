@@ -8,15 +8,21 @@
 
 int main(void){
 
-    uart_init(9600);
-    pwm_init(1000,pwm_TIMER1);   // Frequency = 1000
-    timer_ini();
+    uart_init(9600);                 // UART initialization at 9600 BUAD 
+    pwm_init(1000,pwm_TIMER1);      // Frequency = 1000 and TIMER1 PWM initialization
+    pwm_init(5000,pwm_TIMER2);     // Frequency = 5000 and TIMER2 PWM initialization
+    timer_ini();                  // TIMER0 initialization for timing (counting)
 
-    uint32_t wait = get_ticks();  /* Time stamps for timing logic in pwm and timer driver */
+    /* Time stamps for timing logic in pwm and timer driver */
+    uint32_t uart_wait = get_ticks();  
     uint32_t led1_wait = get_ticks();
     uint32_t led2_wait = get_ticks();
-    uint16_t led1_duty = 0;
-    uint16_t led2_duty = 0;
+    uint32_t led3_wait = get_ticks();
+
+    /* Duty cycle variables for led */
+    uint8_t led1_duty = 0;
+    uint8_t led2_duty = 0;
+    uint8_t led3_duty = 0;
 
     sei();
 
@@ -41,8 +47,18 @@ int main(void){
                 led2_duty = 0;             /*  */
             }
         }
+
+        if(nb_wait_ms(&led3_wait,60)){
+            pwm_set(pwm_CH2B, led3_duty);
+
+            led3_duty++;
+
+            if(led3_duty > 100){
+                led3_duty = 0;
+            }
+        }
         
-        if(nb_wait_ms(&wait,1000)){
+        if(nb_wait_ms(&uart_wait,1000)){
             uart_print("Hello world!\r\n"); /* Printing message every 1 sec (1000ms) */
         }
     }
