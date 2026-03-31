@@ -5,10 +5,9 @@
 
 /* Channels */
 typedef enum {
-    pwm_CH1A,  /* PB1 */
-    pwm_CH1B,   /* PB2 */
-    pwm_CH2A,
-    pwm_CH2B
+    pwm_CH1A,     /* PB1 */
+    pwm_CH1B,    /* PB2 */
+    pwm_CH2B    /* PD3 */
 } pwm_channel_t;
 
 /*TIMER selection for PWM initialization */
