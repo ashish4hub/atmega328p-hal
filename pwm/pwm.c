@@ -1,6 +1,12 @@
 /* PWM Driver TIMER1 & TIMER2 */
 /* MCU = ATmega328P */
 
+    /* PIN MAPPING */
+/* pwm_CH1A ----> PB1 */
+/* pwm_CH1B ----> PB2 */
+/* pwm_CH2A ----> PB3 (USED AS TOP CAN NOT OUTPUT PWM BEHAVIOUR)*/ 
+/* pwm_CH2B ----> PD3 */
+
 #define F_CPU 16000000UL
 #include<avr/io.h>
 #include<avr/interrupt.h>
@@ -8,8 +14,7 @@
 
 static uint8_t ch1a_enb = 0;          /* TIMER1 channle A enable flag */
 static uint8_t ch1b_enb = 0;         /* TIMER1 channle B enable flag */
-static uint8_t ch2a_enb = 0;        /* TIMER2 channle A enable flag */
-static uint8_t ch2b_enb = 0;       /* TIMER2 channle B enable flag */
+static uint8_t ch2b_enb = 0;        /* TIMER2 channle B enable flag */
 
 static uint16_t pwm_top;   /*  ICR1 (TIMER1 TOP value) */
 static uint8_t pwm_top2;  /* OCRA (TIMER2 TOP vlaue) */
@@ -17,11 +22,10 @@ static uint8_t pwm_top2;  /* OCRA (TIMER2 TOP vlaue) */
 
 /* Channels */
 typedef enum {
-    pwm_CH1A,  /* PB1 */
-    pwm_CH1B,   /* PB2 */
-    pwm_CH2A,
-    pwm_CH2B
-} pwm_channel_t;
+    pwm_CH1A,        /* PB1 */
+    pwm_CH1B,       /* PB2 */
+    pwm_CH2B       /* PD3 */
+} pwm_channel_t;   
 
 /*TIMER selection for PWM initialization */
 typedef enum {
@@ -44,7 +48,7 @@ const prescaler_t prescalers[] = {
 };
 
 /* TIMER2 (8 bits) prescaler table */
-const prescaler_t prescalers2 [] = {
+const prescaler_t prescalers2[] = {
     {1,(1 << CS20)},
     {8, (1 << CS21)},
     {32, (1 << CS21) | (1 << CS20)},
@@ -55,7 +59,7 @@ const prescaler_t prescalers2 [] = {
 };
 
 /* Computation fucntion for TIMER1 Prescaler */
-uint8_t pwm_compute(uint32_t freq, uint16_t *top, uint8_t *cs_bits){
+uint8_t pwm1_compute(uint32_t freq, uint16_t *top, uint8_t *cs_bits){
 
     /* Selection of minimum prescaler */
     for(uint8_t i = 0; i < 5; i++){
@@ -93,8 +97,8 @@ void timer1_pwm_init(uint32_t freq){
 
     uint8_t cs_bits;  // Computed TIMER1 Prescaler bits
 
-    if(!pwm_compute(freq, &pwm_top, &cs_bits)){
-        return;;
+    if(!pwm1_compute(freq, &pwm_top, &cs_bits)){
+        return;
     }
     TCCR1A = (1 << WGM11);
     TCCR1B = (1 << WGM12) | (1 << WGM13) | cs_bits;
@@ -105,7 +109,6 @@ void timer1_pwm_init(uint32_t freq){
 void timer2_pwm_init(uint32_t freq){
 
     // Clearing channel2 flag on initialization
-    ch2a_enb = 0;
     ch2b_enb = 0;
 
     uint8_t cs_bits2;         // Computed TIMER2 Prescaler bits
@@ -120,7 +123,7 @@ void timer2_pwm_init(uint32_t freq){
 
 
 /* TIMER1 PWM channel (pin) selection */
-void pwm_enb_channel(pwm_channel_t channel){
+void pwm_enb_channel1(pwm_channel_t channel){
 
     if(channel == pwm_CH1A){
         if(!ch1a_enb){
@@ -140,16 +143,9 @@ void pwm_enb_channel(pwm_channel_t channel){
 }
 
 /* TIMER2 PWM channel (pin) selection */
-void pwm2_enb_chnl(pwm_channel_t chnl2){
+void pwm_enb_channel2(pwm_channel_t chnl2){
 
-    if(chnl2 == pwm_CH2A){
-        if(!ch2a_enb){
-            DDRD |= (1 << PD7);
-            TCCR2A |= (1 << COM2A1);
-            ch2a_enb = 1;
-        }
-    }
-    else if (chnl2 == pwm_CH2B){
+    if (chnl2 == pwm_CH2B){
         if(!ch2b_enb){
             DDRD |= ( 1<< PD3);
             TCCR2A |= (1 << COM2B1);
@@ -161,7 +157,7 @@ void pwm2_enb_chnl(pwm_channel_t chnl2){
 /* TIMER1 PWM dutycycle assignment */
 void timer1_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
     
-    pwm_enb_channel(ch);
+    pwm_enb_channel1(ch);
     
     if(duty_percent > 100) duty_percent = 100; 
     
@@ -178,8 +174,8 @@ void timer1_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
 
 /* TIMER2 PWM dutycycle assignment */
 void timer2_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
-    
-    pwm2_enb_chnl(ch);
+
+    pwm_enb_channel2(ch);
 
     if(duty_percent > 100) duty_percent = 100;
 
@@ -208,7 +204,7 @@ void pwm_set(pwm_channel_t ch, uint32_t duty_percent){
     if(ch == pwm_CH1A || ch == pwm_CH1B){
         timer1_pwm_set(ch, duty_percent);
     }
-    else if (ch == pwm_CH2A || ch == pwm_CH2B){
+    else if (ch == pwm_CH2B){
         timer2_pwm_set(ch, duty_percent);
     }
 }
