@@ -4,8 +4,12 @@
     /* PIN MAPPING */
 /* pwm_CH1A ----> PB1 */
 /* pwm_CH1B ----> PB2 */
-/* pwm_CH2A ----> PB3 (USED AS TOP CAN NOT OUTPUT PWM BEHAVIOUR)*/ 
+/* pwm_CH2A ----> PB3 (USED AS TOP CAN NOT OUTPUT PWM BEHAVIOUR) */ 
 /* pwm_CH2B ----> PD3 */
+
+        /* APIs */
+/* pwm_init(freq, timer) -----> Desired fequency and Timer (TIMER1 / TIMER0) */
+/* pwm_set(channel, duty_percent) -----> PWM channel (pin) and duty (0 - 100) */
 
 #define F_CPU 16000000UL
 #include<avr/io.h>
@@ -151,6 +155,18 @@ void pwm_enb_channel2(pwm_channel_t chnl2){
             TCCR2A |= (1 << COM2B1);
             ch2b_enb = 1;
         }
+    }
+}
+
+/* Seperate API for enabling channels */
+void pwm_enb_channel(pwm_channel_t chn){
+
+    if(chn == pwm_CH1A || chn == pwm_CH1B){
+        pwm_enb_channel1(chn);
+    }
+    
+    else if (chn == pwm_CH2B){
+        pwm_enb_channel2(chn);
     }
 }
 
