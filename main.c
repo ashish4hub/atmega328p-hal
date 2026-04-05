@@ -1,6 +1,7 @@
 #include "uart/uart.h"
 #include "timer/timer.h"
 #include "pwm/pwm.h"
+#include "adc/adc.h"
 #include <avr/io.h>
 #include <string.h>
 #include <avr/interrupt.h>
@@ -24,9 +25,24 @@ int main(void){
     uint8_t led2_duty = 0;
     uint8_t led3_duty = 0;
 
+    /* ADC configuration */
+    ADC_config_t config = {
+        .reference = ADC_REF_VCC,
+        .mode = ADC_INTERRUPT,
+        .prescaler = ADC_PS_128
+    };
+    
+    ADC_init(&config);
+    uint16_t adc_value = 0;
+
     sei();
 
     while(1){
+        
+        ADC_start(ADC_CH0);       // Start conversion on ADC_CH0 ----> PIN PC0
+        if(ADC_done){
+            adc_value = ADC_get_result();         // ADC result
+        }
 
         if(nb_wait_ms(&led1_wait,20)){
             pwm_set(pwm_CH1A,led1_duty);    /* Set duty cycle for pwm pin */
@@ -44,7 +60,7 @@ int main(void){
             led2_duty++;
 
             if(led2_duty > 100){
-                led2_duty = 0;             /*  */
+                led2_duty = 0;
             }
         }
 
