@@ -187,7 +187,6 @@ void timer1_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
     }
 }
 
-
 /* TIMER2 PWM dutycycle assignment */
 void timer2_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
 
@@ -200,7 +199,8 @@ void timer2_pwm_set(pwm_channel_t ch, uint8_t duty_percent){
     OCR2B = duty;   // Only CH2B Supported in variable frequency mode
 }
 
-void pwm_init(uint32_t freq, pwm_timer_t timer){    /* PWM Initialisation and TOP (ICR1) calculation based on passed frequency */
+/* PWM Initialisation and TOP (ICR1) calculation based on passed frequency */
+void pwm_init(uint32_t freq, pwm_timer_t timer){
     
     if(freq == 0){               /* Frequency edge case */
         return;
