@@ -46,7 +46,7 @@ typedef enum {
 }ADC_config_t;
 
 
-void adc_init(const ADC_config_t *config);
+void ADC_init(const ADC_config_t *config);
 void ADC_start(ADC_Channels_t channel);
 uint8_t ADC_done(void);
 uint16_t ADC_get_result(void);

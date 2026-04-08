@@ -12,7 +12,7 @@
 * ADC_get_result() ----> Returns ADC conversion results 
 */
 
-#define F_CPU 16000000
+#define F_CPU 16000000UL
 #include "adc.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
