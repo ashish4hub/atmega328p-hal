@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-void timer_ini(void);
+void timer_init(void);
 uint8_t get_ticks (void);
 uint8_t nb_wait_ms(uint32_t *prv_time ,uint32_t time);
 

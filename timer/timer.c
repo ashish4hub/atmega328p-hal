@@ -28,4 +28,3 @@ uint8_t nb_wait_ms(uint32_t *prv_time,uint32_t time){
     return 0;      // Time not reached (still waiting)
 
 }
-
