@@ -62,11 +62,13 @@ void ADC_init(const ADC_config_t *config){
 }
 
 /* ADC status API */
+/* Retturns 1 if conversion is done */
 uint8_t ADC_done(void){
     return adc_done;
 }
 
 /* ADC result API */
+/* Returns ADC reulst */
 uint16_t ADC_get_result(void){
     return adc_result;
 }
