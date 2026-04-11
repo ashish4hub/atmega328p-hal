@@ -26,7 +26,7 @@ volatile uint8_t tx_tail = 0;
 volatile uint8_t tx_head = 0;
 
 /* Store characters in TX buffer and enables TX interrupt */
-void uart_put_tx(char c){
+void USART_put_tx(char c){
 
   uint8_t next = (tx_head +1 ) % Tx_buffer_size;
   
@@ -40,14 +40,14 @@ void uart_put_tx(char c){
 }
 
 /* UART print API */
-void uart_print(const char *s){
+void USART_print(const char *s){
   while(*s){
-    uart_put_tx(*s++);
+    USART_put_tx(*s++);
   }
 }
 
 /* USART initialization */
-void uart_init(uint32_t BAUD){
+void USART_init(uint32_t BAUD){
   uint16_t BRC = ((F_CPU / (16UL * BAUD)) - 1UL);
   UBRR0H = (BRC >> 8);
   UBRR0L = BRC;
@@ -79,12 +79,12 @@ ISR(USART_RX_vect){
 }
 
 /* If data is availabe for reading */
-uint8_t uart_rx_avail(void){
+uint8_t USART_rx_avail(void){
   return (rx_head != rx_tail);
 }
 
 /* Get RX data */
-char uart_get_data(void){
+char USART_get_data(void){
   if(rx_head == rx_tail) return 0;
   char data = rx_buff[rx_tail];
   rx_tail = (rx_tail + 1) % rx_buff_size;
@@ -93,8 +93,8 @@ char uart_get_data(void){
 
 /* Building Line (string) */
 uint8_t read_line(void){
-  while(uart_rx_avail()){
-    char c = uart_get_data();
+  while(USART_rx_avail()){
+    char c = USART_get_data();
     if(c == '\n' || c == '\r'){
       line[line_idx] = '\0'; //end string
       line_idx = 0;
