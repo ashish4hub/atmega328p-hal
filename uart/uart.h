@@ -7,10 +7,10 @@
 #define Rx_buffer_size 64
 #define line_size 32
 
- void USART_init(uint32_t BAUD);
- void USART_print(const char *s);
- uint8_t read_line(void);
+ void USART_init(uint32_t BAUD);            /* Initialize USART with desired baud rate */
+ void USART_print(const char *str);        /* Print character or string */
+ uint8_t USART_read_line(void);           /* Build string from received characters Returns 1 when done */
 
- extern const char line[line_size];
+ extern const char line[line_size];      /* String storage array used for reading the received string */
 
  #endif
