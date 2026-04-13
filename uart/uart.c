@@ -2,13 +2,22 @@
 /* Hardware abstraction layer for serial communicattion using USART */
 /* MCU = ATmega328P */
 
+/*--------------------APIs--------------------*/
+/*
+* USART_init() ----> Initialize USART with desired BAUD
+* USART_print() ----> Print string
+* USART_read_line() ----> Builds string from received characters and stores in 'line' array -> Returns 1 when ready for reading
+* line ----> Character array where string is stored
+*/
+
+
 #define F_CPU 16000000UL
 #include<avr/io.h>
 #include<avr/interrupt.h>
 #include<stdint.h>
 
 #define Tx_buffer_size 64  // TX Buffer size
-#define rx_buff_size 64   // RX Buffer size
+#define RX_buffer_size 64   // RX Buffer size
 
 #define line_size 32      // Line size for RX string
 
@@ -17,34 +26,14 @@ char line[line_size];     // Character array for forming string
 uint8_t line_idx = 0;     // Line array index
 
 
-volatile char rx_buff[rx_buff_size];
-volatile uint8_t rx_head = 0;
-volatile uint8_t rx_tail = 0;
+volatile char RX_buffer[RX_buffer_size];
+volatile uint8_t RX_head = 0;
+volatile uint8_t RX_tail = 0;
 
-volatile uint8_t Tx_buff[Tx_buffer_size];
-volatile uint8_t tx_tail = 0;
-volatile uint8_t tx_head = 0;
+volatile uint8_t Tx_buffer[Tx_buffer_size];
+volatile uint8_t TX_tail = 0;
+volatile uint8_t TX_head = 0;
 
-/* Store characters in TX buffer and enables TX interrupt */
-void USART_put_tx(char c){
-
-  uint8_t next = (tx_head +1 ) % Tx_buffer_size;
-  
-//drops character if buffer is full
-  if(next == tx_tail){
-    return;
-  }
-  Tx_buff[tx_head] = c;
-  tx_head = next;
-  UCSR0B |= (1 << UDRIE0);
-}
-
-/* UART print API */
-void USART_print(const char *s){
-  while(*s){
-    USART_put_tx(*s++);
-  }
-}
 
 /* USART initialization */
 void USART_init(uint32_t BAUD){
@@ -55,47 +44,94 @@ void USART_init(uint32_t BAUD){
   UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
 }
 
-/* TX (UDRE) interrupt function */ 
-ISR(USART_UDRE_vect)
-{
-    if (tx_head == tx_tail) {
-        UCSR0B &= ~(1 << UDRIE0);   // Buffer empty
-    } else {
-        UDR0 = Tx_buff[tx_tail];
-        tx_tail = (tx_tail + 1) % Tx_buffer_size;
+
+/*-------------------------------TX-------------------------------*/
+
+/* 
+* Store characters in TX buffer 
+* Enable interrupt for transmission
+* If interrupt is off kickstart transmission manually  
+*/
+void USART_TX_byte(uint8_t data){
+
+    uint8_t next_head;
+
+    while(1){
+        next_head = (TX_head + 1) % Tx_buffer_size;
+        if(next_head != TX_tail){
+            break;
+        }
     }
+
+    Tx_buffer[TX_head] = data;
+    TX_head = next_head;
+
+    // If interrupt is OFF -> UART is idle -> kickstart manually
+    if(!(UCSR0B & (1 << UDRIE0))){
+        UDR0 = Tx_buffer[TX_tail];
+        TX_tail = (TX_tail + 1) % Tx_buffer_size;
+    }
+
+    UCSR0B |= (1 << UDRIE0);
 }
+
+/* String print function */
+void USART_print(const char *str){
+  while(*str){
+    USART_TX_byte(*str++);;
+  }
+}
+
+/*
+* Disable interrupt if buffer is empty and return
+* If buffer has characters, starts transmission from TX buffer 
+*/
+ISR(USART_UDRE_vect){
+
+  if(TX_head == TX_tail){
+    UCSR0B &= ~(1 << UDRIE0);
+    return;
+  }
+  UDR0 = Tx_buffer[TX_tail];
+  TX_tail = (TX_tail + 1) % Tx_buffer_size;
+}
+
+
+/*---------------------------------------RX---------------------------------------*/
 
 /* RX interrupt function */
 ISR(USART_RX_vect){
   char data = UDR0; // Read received byte in data 
-  uint8_t next = (rx_head + 1) % rx_buff_size;
+  uint8_t next = (RX_head + 1) % RX_buffer_size;
   
   //Drop byte is buffer is full
-  if(next != rx_tail){
-    rx_buff[rx_head] = data;
-    rx_head = next;
+  if(next != RX_tail){
+    RX_buffer[RX_head] = data;
+    RX_head = next;
   }
 }
 
 /* If data is availabe for reading */
 uint8_t USART_rx_avail(void){
-  return (rx_head != rx_tail);
+  return (RX_head != RX_tail);
 }
 
 /* Get RX data */
 char USART_get_data(void){
-  if(rx_head == rx_tail) return 0;
-  char data = rx_buff[rx_tail];
-  rx_tail = (rx_tail + 1) % rx_buff_size;
+  if(RX_head == RX_tail) return 0;
+  char data = RX_buffer[RX_tail];
+  RX_tail = (RX_tail + 1) % RX_buffer_size;
   return data;
 }
 
 /* Building Line (string) */
-uint8_t read_line(void){
+uint8_t USART_read_line(void){
   while(USART_rx_avail()){
     char c = USART_get_data();
-    if(c == '\n' || c == '\r'){
+    
+    if(c == '\r') continue;
+
+    if(c == '\n'){
       line[line_idx] = '\0'; //end string
       line_idx = 0;
       return 1;
