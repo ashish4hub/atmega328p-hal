@@ -1,3 +1,7 @@
+/* AVR drivers application */
+
+#define F_CPU 16000000UL
+
 #include "uart/uart.h"
 #include "timer/timer.h"
 #include "pwm/pwm.h"
@@ -6,9 +10,8 @@
 #include <string.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
-#include <util/delay.h>
 
-#define adc_led PB4
+#define adc_led PB4      // Led 
 
 int main(void){
 
@@ -32,32 +35,85 @@ int main(void){
     /* Time stamps for timing logic in pwm and timer driver */  
     uint32_t led1_wait = get_ticks();
     uint32_t adc_wait = get_ticks();
+    uint32_t usart_wait = get_ticks();
+
+    uint8_t wait_flag1 = 1;
 
     /* Duty cycle variables for led */
     uint8_t led1_duty = 0;
-    sei();
+
+    sei();        // Global interrupt enable
+
+    /* Initial message */
+    USART_print("Type start\n");
+
+    /* State */
+    typedef enum {
+        STATE_IDLE,
+        STATE_MENU,
+        STATE_ADC,
+        STATE_PWM
+    } sys_state;
+
+    sys_state state = STATE_IDLE;    // Initially at IDLE state
 
     while(1){
-        if(nb_wait_ms(&led1_wait,50)){
-            pwm_set(pwm_CH1A,led1_duty);
-            led1_duty++;
 
-            if(led1_duty > 100){
-                led1_duty = 0;
+        /* Start command and operation menu */
+        if(USART_read_line()){
+            if(strcmp(line,"START") == 0){
+                state = STATE_MENU;
+                USART_print("Choose operation\n");
+                USART_print("1. Start ADC\n");
+                USART_print("2. Start PWM\n");
+            }
+            
+            /* ADC mode */
+            else if(strcmp(line,"Start ADC") == 0){
+                state = STATE_ADC;
+                USART_print("ADC mode activated!\n");
+            }
+
+            /* PWM mode */
+            else if(strcmp(line,"Start PWM") == 0){
+                state = STATE_PWM;
+                USART_print("PWM started\n");
             }
         }
-        if(nb_wait_ms(&adc_wait,10)){
+
+        /* State based system control */
+        switch (state){
+
+        case STATE_ADC:
+        if(nb_wait_ms(&adc_wait,5)){
             ADC_start(ADC_CH0);
         }
         if(ADC_done()){
+            if(wait_flag1 == 1){
+                USART_print("Conversion done!\n");
+                wait_flag1 = 0;
+            }
             ADC_result = ADC_get_result();
-            
             if(ADC_result > 513){
                 PORTB |= (1 << adc_led);
             }
-            else {
+            else{
                 PORTB &= ~(1 << adc_led);
             }
+        }
+            break;
+            case  STATE_PWM:
+            pwm_set(pwm_CH1A,led1_duty);
+            if(nb_wait_ms(&led1_wait,10)){
+                led1_duty ++;
+                if(led1_duty > 100){
+                    led1_duty = 0;
+                }
+            }
+            break;
+        }
+        if(nb_wait_ms(&usart_wait,5000)){
+            wait_flag1 = 1;
         }
     }
 }
