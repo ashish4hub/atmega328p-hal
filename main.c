@@ -37,7 +37,9 @@ int main(void){
     uint32_t adc_wait = get_ticks();
     uint32_t usart_wait = get_ticks();
 
+    /* Wait flag */
     uint8_t wait_flag1 = 1;
+    uint8_t wait_flag2  = 1;
 
     /* Duty cycle variables for led */
     uint8_t led1_duty = 0;
@@ -64,20 +66,20 @@ int main(void){
             if(strcmp(line,"START") == 0){
                 state = STATE_MENU;
                 USART_print("Choose operation\n");
-                USART_print("1. Start ADC\n");
-                USART_print("2. Start PWM\n");
+                USART_print("1. Run Gas detection\n");
+                USART_print("2. Run LED ramp\n");
             }
             
             /* ADC mode */
-            else if(strcmp(line,"Start ADC") == 0){
+            else if(strcmp(line,"Run Gas detection") == 0){
                 state = STATE_ADC;
-                USART_print("ADC mode activated!\n");
+                USART_print("Gas detection started!\n");
             }
 
             /* PWM mode */
-            else if(strcmp(line,"Start PWM") == 0){
+            else if(strcmp(line,"Run LED ramp") == 0){
                 state = STATE_PWM;
-                USART_print("PWM started\n");
+                USART_print("LED ramp started!\n");
             }
         }
 
@@ -88,6 +90,7 @@ int main(void){
         if(nb_wait_ms(&adc_wait,5)){
             ADC_start(ADC_CH0);
         }
+
         if(ADC_done()){
             if(wait_flag1 == 1){
                 USART_print("Conversion done!\n");
@@ -96,9 +99,17 @@ int main(void){
             ADC_result = ADC_get_result();
             if(ADC_result > 513){
                 PORTB |= (1 << adc_led);
+                if(wait_flag2 == 1){
+                    USART_print("Gas concentration: High\n");
+                    wait_flag2 = 0;
+                }
             }
             else{
                 PORTB &= ~(1 << adc_led);
+                if(wait_flag2 == 1){
+                    USART_print("Gas concentration: Ideal\n");
+                    wait_flag2 = 0;
+                }
             }
         }
             break;
@@ -112,8 +123,9 @@ int main(void){
             }
             break;
         }
-        if(nb_wait_ms(&usart_wait,5000)){
-            wait_flag1 = 1;
+        // Set wait_flag2 for printing concentration every 1 sec
+        if(nb_wait_ms(&usart_wait,1000)){
+            wait_flag2 = 1;
         }
     }
 }
