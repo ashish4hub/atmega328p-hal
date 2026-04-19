@@ -6,12 +6,14 @@
 #include "timer/timer.h"
 #include "pwm/pwm.h"
 #include "adc/adc.h"
+#include "spi/spi.h"
+
 #include <avr/io.h>
 #include <string.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
 
-#define adc_led PB4      // Led 
+#define adc_led PB0      // Led 
 
 int main(void){
 
@@ -100,14 +102,16 @@ int main(void){
             if(ADC_result > 513){
                 PORTB |= (1 << adc_led);
                 if(wait_flag2 == 1){
-                    USART_print("Gas concentration: High\n");
+                    USART_print("\nGas concentration: High ");
+                    USART_printIN(ADC_result);
                     wait_flag2 = 0;
                 }
             }
             else{
                 PORTB &= ~(1 << adc_led);
                 if(wait_flag2 == 1){
-                    USART_print("Gas concentration: Ideal\n");
+                    USART_print("\nGas concentration: Ideal ");
+                    USART_printIN(ADC_result);
                     wait_flag2 = 0;
                 }
             }
