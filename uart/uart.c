@@ -6,27 +6,27 @@
 /*
 * USART_init() ----> Initialize USART with desired BAUD
 * USART_print() ----> Print string
+* USART_printIN() ----> Print integer
 * USART_read_line() ----> Builds string from received characters and stores in 'line' array -> Returns 1 when ready for reading
 * line ----> Character array where string is stored
 */
 
 
 #define F_CPU 16000000UL
+
+#include "uart.h"
+
 #include<avr/io.h>
 #include<avr/interrupt.h>
 #include<stdint.h>
 
-#define Tx_buffer_size 64  // TX Buffer size
-#define RX_buffer_size 64   // RX Buffer size
-
-#define line_size 32      // Line size for RX string
 
 char line[line_size];     // Character array for forming string
 
 uint8_t line_idx = 0;     // Line array index
 
 
-volatile char RX_buffer[RX_buffer_size];
+volatile char RX_buffer[Rx_buffer_size];
 volatile uint8_t RX_head = 0;
 volatile uint8_t RX_tail = 0;
 
@@ -82,6 +82,36 @@ void USART_print(const char *str){
   }
 }
 
+/* USART integer print function */
+void USART_printIN(int num){
+  char buffer[10];
+
+  int i = 0;
+  
+  // Handling 0
+  if(num == 0){
+    USART_TX_byte('0');
+    return;
+  }
+
+  // Handling negative
+  if(num < 0){
+    USART_TX_byte('-');
+    num = -num;
+  }
+
+  // Converting digits to string (in reverse order) 
+  while(num > 0){
+    buffer[i++] = (num % 10) + '0';
+    num /= 10;
+  }
+
+  // Printing in correct order
+  while(i--){
+    USART_TX_byte(buffer[i]);
+  }
+}
+
 /*
 * Disable interrupt if buffer is empty and return
 * If buffer has characters, starts transmission from TX buffer 
@@ -102,7 +132,7 @@ ISR(USART_UDRE_vect){
 /* RX interrupt function */
 ISR(USART_RX_vect){
   char data = UDR0; // Read received byte in data 
-  uint8_t next = (RX_head + 1) % RX_buffer_size;
+  uint8_t next = (RX_head + 1) % Rx_buffer_size;
   
   //Drop byte is buffer is full
   if(next != RX_tail){
@@ -120,7 +150,7 @@ uint8_t USART_rx_avail(void){
 char USART_get_data(void){
   if(RX_head == RX_tail) return 0;
   char data = RX_buffer[RX_tail];
-  RX_tail = (RX_tail + 1) % RX_buffer_size;
+  RX_tail = (RX_tail + 1) % Rx_buffer_size;
   return data;
 }
 
