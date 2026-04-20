@@ -17,7 +17,9 @@ typedef enum {
 } pwm_timer_t;
 
 
-void pwm_init(uint32_t freq, pwm_timer_t timer);  /* Initialize pwm with desired frequency and PIN */
+void pwm_init(uint32_t freq, pwm_timer_t timer);            /* Initialize pwm with desired frequency and PIN */
 void pwm_set(pwm_channel_t ch, uint32_t duty_percent);     /* Set pin (PB1 or PB2), set duty cycle (0 --> 1000)*/
+void pwm_disable(pwm_channel_t ch);                       /* Disable PWM and sets pin low */
+void pwm_start(pwm_channel_t ch);                        /* Start PWM */
 
 #endif

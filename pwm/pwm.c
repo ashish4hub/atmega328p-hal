@@ -125,7 +125,6 @@ void timer2_pwm_init(uint32_t freq){
     OCR2A = pwm_top2;
 }
 
-
 /* TIMER1 PWM channel (pin) selection */
 void pwm_enb_channel1(pwm_channel_t channel){
 
@@ -222,5 +221,46 @@ void pwm_set(pwm_channel_t ch, uint32_t duty_percent){
     }
     else if (ch == pwm_CH2B){
         timer2_pwm_set(ch, duty_percent);
+    }
+}
+
+/* PWM stop function */
+void pwm_disable(pwm_channel_t ch){
+    
+    if(ch == pwm_CH1A){
+        TCCR1A &= ~((1 << COM1A1) | (1 << COM1A0));
+        PORTB &= ~(1 << PB1);
+    }
+    else if(ch == pwm_CH1B){
+        TCCR1A &= ~((1 << COM1B1) | (1 << COM1B0));
+        PORTB &= ~(1 << PB2);
+    }
+    else if(ch == pwm_CH2B){
+        TCCR2A &= ~((1 << COM2B1) | (1 << COM2B0));
+        PORTD &= ~(1 << PD3);
+    }
+}
+
+/* PWM start function */
+void pwm_start(pwm_channel_t ch){
+
+    if(ch == pwm_CH1A){
+        DDRB |= (1 << PB1);
+
+        TCCR1A &= ~(1 << COM1A0);      // Non inverting
+        TCCR1A |= (1 << COM1A1);      // re enable pwm output
+    }
+    else if(ch == pwm_CH1B){
+        DDRB|= (1 << PB2);
+
+        TCCR1A &= ~(1 << COM1B0);
+        TCCR1A |= (1 << COM1B1);
+
+    }
+    else if(ch == pwm_CH2B){
+        DDRD |= (1 << PD3);
+
+        TCCR2A &= ~(1 << COM2B0);
+        TCCR2A |= (1 << COM2B1);
     }
 }
