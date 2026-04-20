@@ -1,4 +1,7 @@
 /* AVR drivers application */
+/* CLI  based system */
+
+
 
 #define F_CPU 16000000UL
 
@@ -6,7 +9,8 @@
 #include "timer/timer.h"
 #include "pwm/pwm.h"
 #include "adc/adc.h"
-#include "spi/spi.h"
+#include "CLI/CLI.h"
+#include "src/pwm_src.h"
 
 #include <avr/io.h>
 #include <string.h>
@@ -19,7 +23,6 @@ int main(void){
 
     USART_init(9600);                 // UART initialization at 9600 BUAD 
     pwm_init(1000,pwm_TIMER1);       // Frequency = 1000 and TIMER1 PWM initialization
-    pwm_init(5000,pwm_TIMER2);      // Frequency = 5000 and TIMER2 PWM initialization
     timer_init();                  // TIMER0 initialization for timing (counting)
 
     /* ADC configuration */
@@ -62,74 +65,15 @@ int main(void){
     sys_state state = STATE_IDLE;    // Initially at IDLE state
 
     while(1){
-
-        /* Start command and operation menu */
-        if(USART_read_line()){
-            if(strcmp(line,"START") == 0){
-                state = STATE_MENU;
-                USART_print("Choose operation\n");
-                USART_print("1. Run Gas detection\n");
-                USART_print("2. Run LED ramp\n");
-            }
-            
-            /* ADC mode */
-            else if(strcmp(line,"Run Gas detection") == 0){
-                state = STATE_ADC;
-                USART_print("Gas detection started!\n");
-            }
-
-            /* PWM mode */
-            else if(strcmp(line,"Run LED ramp") == 0){
-                state = STATE_PWM;
-                USART_print("LED ramp started!\n");
-            }
+        
+        CLI_process();
+        
+        if(pwm_enable == 1){
+            start_pwm();
+            run_pwm();
         }
-
-        /* State based system control */
-        switch (state){
-
-        case STATE_ADC:
-        if(nb_wait_ms(&adc_wait,5)){
-            ADC_start(ADC_CH0);
-        }
-
-        if(ADC_done()){
-            if(wait_flag1 == 1){
-                USART_print("Conversion done!\n");
-                wait_flag1 = 0;
-            }
-            ADC_result = ADC_get_result();
-            if(ADC_result > 513){
-                PORTB |= (1 << adc_led);
-                if(wait_flag2 == 1){
-                    USART_print("\nGas concentration: High ");
-                    USART_printIN(ADC_result);
-                    wait_flag2 = 0;
-                }
-            }
-            else{
-                PORTB &= ~(1 << adc_led);
-                if(wait_flag2 == 1){
-                    USART_print("\nGas concentration: Ideal ");
-                    USART_printIN(ADC_result);
-                    wait_flag2 = 0;
-                }
-            }
-        }
-            break;
-            case  STATE_PWM:
-            pwm_set(pwm_CH1A,led1_duty);
-            if(nb_wait_ms(&led1_wait,10)){
-                led1_duty ++;
-                if(led1_duty > 100){
-                    led1_duty = 0;
-                }
-            }
-            break;
-        }
-        // Set wait_flag2 for printing concentration every 1 sec
-        if(nb_wait_ms(&usart_wait,1000)){
-            wait_flag2 = 1;
+        if(pwm_enable == 0){
+            stop_pwm();
         }
     }
 }
