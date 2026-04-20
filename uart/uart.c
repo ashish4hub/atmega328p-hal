@@ -21,10 +21,6 @@
 #include<stdint.h>
 
 
-char line[line_size];     // Character array for forming string
-
-uint8_t line_idx = 0;     // Line array index
-
 
 volatile char RX_buffer[Rx_buffer_size];
 volatile uint8_t RX_head = 0;
@@ -152,23 +148,4 @@ char USART_get_data(void){
   char data = RX_buffer[RX_tail];
   RX_tail = (RX_tail + 1) % Rx_buffer_size;
   return data;
-}
-
-/* Building Line (string) */
-uint8_t USART_read_line(void){
-  while(USART_rx_avail()){
-    char c = USART_get_data();
-    
-    if(c == '\r') continue;
-
-    if(c == '\n'){
-      line[line_idx] = '\0'; //end string
-      line_idx = 0;
-      return 1;
-    }
-    if(line_idx < line_size - 1){
-      line[line_idx++] = c;
-    }
-  }
-  return 0;
 }
