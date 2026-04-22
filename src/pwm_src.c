@@ -1,8 +1,8 @@
 /* PWM servicce */
 
 #include "pwm_src.h"
-#include "../CLI/CLI.h"
 
+pwm_state_t pwm_state = state_pwm_off;
 
 /* Start led ram up */
 void run_pwm(void){
@@ -25,13 +25,33 @@ void run_pwm(void){
     }
 }
 
-/* Stop pwm */
-void stop_pwm(void){
-    pwm_disable(pwm_CH1A);
+/* State based control */
+void pwm_set_state(pwm_state_t state){
+
+    switch (state)
+    {
+    case state_pwm_on:
+        pwm_state = state_pwm_on;
+        break;
+    case state_pwm_off:
+    pwm_state = state_pwm_off;
+        break;
+    }
 }
 
-/* Start pwm */
-void start_pwm(void){
-    pwm_start(pwm_CH1A);
+/* PWM SRC*/
+void pwm_src(void){
+    
+    switch (pwm_state)
+    {
+    case state_pwm_on:
+        pwm_start(pwm_CH1A);
+        run_pwm();
+        break;
+    
+    case state_pwm_off:
+        pwm_disable(pwm_CH1A);
+        break;
+    }
 }
 
