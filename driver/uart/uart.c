@@ -16,12 +16,6 @@
 
 #include "uart.h"
 
-#include<avr/io.h>
-#include<avr/interrupt.h>
-#include<stdint.h>
-
-
-
 volatile char RX_buffer[Rx_buffer_size];
 volatile uint8_t RX_head = 0;
 volatile uint8_t RX_tail = 0;

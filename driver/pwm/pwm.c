@@ -12,9 +12,8 @@
 /* pwm_set(channel, duty_percent) -----> PWM channel (pin) and duty (0 - 100) */
 
 #define F_CPU 16000000UL
-#include<avr/io.h>
-#include<avr/interrupt.h>
-#include<stdint.h>
+
+#include "pwm.h"
 
 static uint8_t ch1a_enb = 0;          /* TIMER1 channle A enable flag */
 static uint8_t ch1b_enb = 0;         /* TIMER1 channle B enable flag */
@@ -23,19 +22,6 @@ static uint8_t ch2b_enb = 0;        /* TIMER2 channle B enable flag */
 static uint16_t pwm_top;   /*  ICR1 (TIMER1 TOP value) */
 static uint8_t pwm_top2;  /* OCRA (TIMER2 TOP vlaue) */
 
-
-/* Channels */
-typedef enum {
-    pwm_CH1A,        /* PB1 */
-    pwm_CH1B,       /* PB2 */
-    pwm_CH2B       /* PD3 */
-} pwm_channel_t;   
-
-/*TIMER selection for PWM initialization */
-typedef enum {
-    pwm_TIMER1,
-    pwm_TIMER2
-} pwm_timer_t;
 
 /* TIMER1 Prescaler table */
 typedef struct {
