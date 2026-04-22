@@ -1,10 +1,16 @@
-#ifndef LED_H
-#define LED_H
+#ifndef LED_SRC_H
+#define LED_SRC_H
 
-#include <avr/io.h>
-#include <stdint.h>
+#include "../driver/led/led.h"
 
-void led_on(void);
-void led_off(void);
+/* State based control */
+typedef enum {
+    state_led_on,
+    state_led_off
+} led_state_t;
+
+
+void led_set_state(led_state_t state);
+void led_src(void);
 
 #endif
