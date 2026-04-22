@@ -8,12 +8,14 @@
 #include <stdint.h>
 
 typedef enum{
-    state_pwm_on,
-    state_pwm_off
-}pwm_state_t;
+    state_ramp_on,
+    state_ramp_off,
+    state_led_fade
+} pwm_state_t;
 
 
-void run_pwm(void);
+void run_led_rampup(void);
+void led_fade(void);
 void pwm_set_state(pwm_state_t state);
 void pwm_src(void);
 
