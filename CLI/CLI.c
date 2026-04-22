@@ -38,13 +38,17 @@ void CLI_execute(char *cmd){
         led_set_state(state_led_off);
         USART_print("LED OFF\n");
     }
-    else if(strcmp(cmd, "run pwm") == 0){
-        pwm_set_state(state_pwm_on);
-        USART_print("PWM STARTED\n");
+    else if(strcmp(cmd, "start led ramp") == 0){
+        pwm_set_state(state_led_on);
+        USART_print("LED RAMP STARTED\n");
     }
-    else if(strcmp(cmd, "stop pwm") == 0){
-        pwm_set_state(state_pwm_off);
-        USART_print("PWM STOPPED\n");
+    else if(strcmp(cmd, "stop led ramp") == 0){
+        pwm_set_state(state_led_off);
+        USART_print("LED RAMP STOPPED\n");
+    }
+    else if(strcmp(cmd, "start led fade") == 0){
+        pwm_set_state(state_led_fade);
+        USART_print("LED FADE STARTED\n");
     }
     else {
         USART_print("Invalid command\n");
