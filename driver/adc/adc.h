@@ -53,5 +53,8 @@ void ADC_init(const ADC_config_t *config);      /* Initialize ADC with desired R
 void ADC_start(ADC_Channels_t channel);        /* Start ADC conversion on selected Channel (pin) */
 uint8_t ADC_done(void);                       /* Function to check if conversion is done */ /* Returns 1 if conversion is done */
 uint16_t ADC_get_result(void);               /* Returns ADC result */
+void ADC_disable(void);                     /* Disables ADC */
+void ADC_enable(void);                     /* Enable ADC */
+
 
 #endif

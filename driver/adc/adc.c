@@ -75,3 +75,13 @@ ISR(ADC_vect){
     adc_done = 1;
 }
 
+/* ADC disable */
+void ADC_disable(void){
+
+    ADCSRA &= ~(1 << ADEN);        // Disables ADC and releases ADC hardware
+}
+
+/* ADC enable */
+void ADC_enable(void){
+    ADCSRA |= (1 << ADEN);       // Enables ADC
+}
