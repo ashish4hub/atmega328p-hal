@@ -4,6 +4,7 @@
 #include "../driver/uart/uart.h"
 #include "../src/led_src.h"
 #include "../src/pwm_src.h"
+#include "../src/adc_src.h"
 
 #include <stdint.h>
 #include <stdlib.h>
