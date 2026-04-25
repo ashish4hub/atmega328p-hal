@@ -11,6 +11,17 @@ int main(void){
     pwm_init(1000,pwm_TIMER1);       // Frequency = 1000 and TIMER1 PWM initialization
     timer_init();                   // TIMER0 initialization for timing (counting)
     
+    /* ADC Configuration */
+    ADC_config_t adc_config = {
+        .reference = ADC_REF_VCC,
+        .prescaler = ADC_PS_128,
+        .mode = ADC_INTERRUPT
+    };
+
+    ADC_init(&adc_config);      // ADC initialization
+
+
+
     sei();                         // Global interrupt enable
 
     USART_print("Enter commands\n");
@@ -18,6 +29,7 @@ int main(void){
     while(1){
         
         CLI_process();
+        adc_src();
         pwm_src();
         led_src();
     }
