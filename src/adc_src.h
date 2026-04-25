@@ -18,9 +18,10 @@ typedef enum{
 }GAS_reading_t;
 
 
-void adc_state_assign(ADC_work_state st);               // Start or stop adc according to command
+void adc_set_state(ADC_work_state st);                  // set state to start or stop adc according to command
 void adc_src(void);                                    // Reading adc
-GAS_reading_t gas_status_rt(void);
-uint16_t gas_result(void);
+GAS_reading_t gas_status(void);                       // Return gas status (High or Low)
+uint16_t gas_result(void);                           // Return conversion result
+uint8_t gas_reading_done(void);                     // Return 1 when conversion is done 
 
 #endif

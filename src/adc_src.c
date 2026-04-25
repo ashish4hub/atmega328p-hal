@@ -1,47 +1,69 @@
-/* ADC service */
+/* ADC service for gas concentration detection */
+
+#define threshold_high 520
+#define threshold_low 470
 
 #include "adc_src.h"
 
-static uint16_t threshold_high = 520;      // Threshold for high
-static uint16_t threshold_low = 460;      // Threshold for low
-static uint16_t adc_result = 0;          // ADC result
+static ADC_work_state state = GAS_stop_detect;
+static uint16_t result;
+static GAS_reading_t status;
 
-GAS_reading_t status = GAS_idle;            // Status (High or Low) according to threshold
-ADC_work_state state;                      // Working status
+/* Set state */
+void adc_set_state(ADC_work_state st){
 
-/* State assignment */
-void adc_state_assign(ADC_work_state st){
-    if(st == GAS_start_detect){
+    switch (st)
+    {
+    case GAS_start_detect:
         state = GAS_start_detect;
-    }
-    else {
+        break;
+    
+    case GAS_stop_detect:
         state = GAS_stop_detect;
+        break;
     }
 }
 
-/* Start and read ADC value */
+/*ADC reading function */
 void adc_reading(void){
 
-    ADC_start(ADC_CH0);
-
-    if(ADC_done()){
-
-        adc_result = ADC_get_result();
+    // Start conversion only when previous conversion completed and read successfully 
+    static uint8_t cnv_started = 0;
+    if(!cnv_started){
+        ADC_start(ADC_CH0);
+        cnv_started = 1;
     }
-    if(adc_result > threshold_high){
+    else{
+        if(ADC_done()){
+            result = ADC_get_result();
+            cnv_started = 0;
+        }
+    }
+    if(result >= threshold_high){
         status = GAS_high;
     }
-    else if(adc_result < threshold_low){
+    else if(result <= threshold_low){
         status = GAS_low;
     }
 }
 
-/* ADC SRC */
+/* Return result function */
+uint16_t gas_result(void){
+    return result;
+}
+
+/* Return status function */
+GAS_reading_t gas_status(void){
+    return status;
+}
+
+/* ADC src */
 void adc_src(void){
 
     switch (state)
     {
     case GAS_start_detect:
+        ADC_enable();
         adc_reading();
         break;
     
@@ -49,14 +71,4 @@ void adc_src(void){
         ADC_disable();
         break;
     }
-}
-
-/* GAS status function */
-GAS_reading_t gas_status_rt(void){
-    return status;
-}
-
-/* Return result function */
-uint16_t gas_result(void){
-    return adc_result;
 }
