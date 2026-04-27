@@ -57,16 +57,22 @@ void CLI_execute(char *cmd){
     /* GAS detection */
     else if(strcmp(cmd, "gas detect") == 0){
         adc_set_state(GAS_start_detect);
+        
         USART_print("DETECTION STARTED!\n");
-        USART_print("GAS: ");
+        USART_print("ENTER COMMAND AGAIN TO PRINT\n");
+        
+        // Print gas status (HIGH or LOW)
         if(gas_status() == GAS_high){
+            USART_print("GAS: ");
             USART_printIN(gas_result());
             USART_print(" HIGH\n");
         }
         else if(gas_status() == GAS_low){
+            USART_print("GAS: ");
             USART_printIN(gas_result());
             USART_print(" LOW\n");
         }
+    
     }
     else if(strcmp(cmd, "stop gas detect") == 0){
         adc_set_state(GAS_stop_detect);
