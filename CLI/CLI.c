@@ -54,7 +54,7 @@ void CLI_execute(char *cmd){
 
     /* Moisture detection */
     else if(strcmp(cmd, "start moist detect") == 0){
-        adc_set_state(GAS_start_detect);
+        MOIST_set_state(MOIST_start_detect);
         MSG_set_state(START_ADC);
     }
 
@@ -66,7 +66,7 @@ void CLI_execute(char *cmd){
     /* Quit */
     else if(strcmp(cmd,"x") == 0){
         MSG_set_state(Quit);
-        adc_set_state(GAS_stop_detect);
+        adc_set_state(MOIST_stop_detect);
         HCSR04_set_state(STOP);
     }
     else {

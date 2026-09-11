@@ -5,27 +5,27 @@
 
 #include "adc_src.h"
 
-static ADC_work_state state = GAS_stop_detect;
+static MOIST_work_state state = MOIST_stop_detect;
 static uint16_t result;
-static GAS_reading_t status;
+static MOIST_reading_t status;
 
 /* Set state */
-void adc_set_state(ADC_work_state st){
+void MOIST_set_state(MOIST_work_state st){
 
     switch (st)
     {
-    case GAS_start_detect:
-        state = GAS_start_detect;
+    case MOIST_start_detect:
+        state = MOIST_start_detect;
         break;
     
-    case GAS_stop_detect:
-        state = GAS_stop_detect;
+    case MOIST_stop_detect:
+        state = MOIST_stop_detect;
         break;
     }
 }
 
-/*ADC reading function */
-void adc_reading(void){
+/* Moisture reading function */
+void MOIST_reading(void){
 
     // Start conversion only when previous conversion completed and read successfully 
     static uint8_t cnv_started = 0;
@@ -40,34 +40,34 @@ void adc_reading(void){
         }
     }
     if(result >= threshold_high){
-        status = GAS_high;
+        status = MOIST_high;
     }
     else if(result <= threshold_low){
-        status = GAS_low;
+        status = MOIST_low;
     }
 }
 
 /* Return result function */
-uint16_t gas_result(void){
+uint16_t MOIST_result(void){
     return result;
 }
 
 /* Return status function */
-GAS_reading_t gas_status(void){
+MOIST_reading_t MOIST_status(void){
     return status;
 }
 
 /* ADC src */
-void adc_src(void){
+void MOISTURE_src(void){
 
     switch (state)
     {
-    case GAS_start_detect:
+    case MOIST_start_detect:
         ADC_enable();
         adc_reading();
         break;
     
-    case GAS_stop_detect:
+    case MOIST_stop_detect:
         ADC_disable();
         break;
     }

@@ -6,22 +6,21 @@
 
 /* Work state */
 typedef enum{
-    GAS_start_detect,
-    GAS_stop_detect
-}ADC_work_state;
+    MOIST_start_detect,
+    MOIST_stop_detect
+}MOIST_work_state;
 
 /* GAS reading status */
 typedef enum{
-    GAS_idle,
-    GAS_high,
-    GAS_low
-}GAS_reading_t;
+    MOIST_idle,
+    MOIST_high,
+    MOIST_low
+}MOIST_reading_t;
 
 
-void adc_set_state(ADC_work_state st);                  // set state to start or stop adc according to command
-void adc_src(void);                                    // Reading adc
-GAS_reading_t gas_status(void);                       // Return gas status (High or Low)
-uint16_t gas_result(void);                           // Return conversion result
-uint8_t gas_reading_done(void);                     // Return 1 when conversion is done 
+void MOIST_set_state(MOIST_work_state st);                  // set state to start or stop adc according to command
+void MOISTURE_src(void);                                    // Reading adc
+MOIST_reading_t MOIST_status(void);                       // Return gas status (High or Low)
+uint16_t MOIST_result(void);                           // Return conversion result
 
 #endif
