@@ -5,7 +5,7 @@ OBJCOPY = avr-objcopy
 CFLAGS = -mmcu=$(MCU) -Os -Wall -DF_CPU=$(F_CPU)
 
 TARGET = main
-SRC    = main.c driver/uart/uart.c driver/timer/timer.c driver/pwm/pwm.c driver/adc/adc.c driver/spi/spi.c driver/led/led.c driver/icu/icu.c CLI/CLI.c src/led_src.c src/pwm_src.c src/adc_src.c src/HCSR04.c src/msg.c
+SRC    = main.c driver/uart/uart.c driver/timer/timer.c driver/pwm/pwm.c driver/adc/adc.c driver/spi/spi.c driver/led/led.c driver/icu/icu.c CLI/CLI.c src/led_src.c src/pwm_src.c src/moist.c src/HCSR04.c src/msg.c
 # This converts the .c list into a .o list
 OBJ    = $(SRC:.c=.o)
 
@@ -27,3 +27,9 @@ clean:
 	rm -f *.o $(TARGET).elf $(TARGET).hex
 
 .PHONY: all clean
+
+flash:
+	avrdude -c arduino -p m328p -P /dev/ttyACM0 -b 115200 -U flash:w:main.hex
+
+.serial:
+	picocom -b 9600 --echo /dev/ttyACM0
