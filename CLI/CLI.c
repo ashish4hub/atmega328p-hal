@@ -12,7 +12,7 @@ void CLI_process(void){
     while(USART_rx_avail()){
         char c = USART_get_data();
 
-        if(c ==  '\n' || c == '\r'){
+        if(c == '\n' || c == '\r'){
             CLI_buffer[CLI_index] = '\0';         // Terminate string
             CLI_execute(CLI_buffer);             // Passing string to execute function
             CLI_index = 0;   // Buffer reset
@@ -53,7 +53,7 @@ void CLI_execute(char *cmd){
     }
 
     /* Moisture detection */
-    else if(strcmp(cmd, "start moist detect") == 0){
+    else if(strcmp(cmd, "measure moisture") == 0){
         MOIST_set_state(MOIST_start_detect);
         MSG_set_state(START_ADC);
     }
@@ -66,7 +66,7 @@ void CLI_execute(char *cmd){
     /* Quit */
     else if(strcmp(cmd,"x") == 0){
         MSG_set_state(Quit);
-        adc_set_state(MOIST_stop_detect);
+        MOIST_set_state(MOIST_stop_detect);
         HCSR04_set_state(STOP);
     }
     else {
