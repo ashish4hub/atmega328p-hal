@@ -9,7 +9,7 @@ static volatile uint16_t end_time;              // store pulse end time
 static volatile uint16_t duration;             // Pulse duration
 static volatile uint16_t distance;            // store calulated distance
 static volatile uint8_t measurement_done;    // measuremnt done flag
-static uint32_t trig_wait = 0;
+static uint32_t trig_wait = 0;              // Trigger wait 
 
 /* State */
 typedef enum{
@@ -31,6 +31,7 @@ void HCSR04_init(void){
     };
 
     ICU_init(&icu_config);
+
 
     DDRD |= (1 << PD7);         // TRIG pin set as output
     state = HCSR04_wait_rising;
@@ -93,15 +94,17 @@ void HCSR04_src(void){
     break;
 
     case START:
-        if(nb_wait_ms(&trig_wait,60)){
-            HCSR04_trigger();
-        }
-        HCSR04_update();
-        break;
+
+    if(nb_wait_ms(&trig_wait,60)){
+    HCSR04_trigger();
+    TIMSK1 |= (1 << ICIE1);
+    }
+    HCSR04_update();
+    break;
 
     case STOP:
-        ICU_stop();
 
+    HCSR04_set_state(IDLE);
     default:
         break;
     }
