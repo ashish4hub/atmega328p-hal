@@ -55,7 +55,7 @@ void CLI_execute(char *cmd){
     /* Moisture detection */
     else if(strcmp(cmd, "measure moisture") == 0){
         MOIST_set_state(MOIST_start_detect);
-        MSG_set_state(START_ADC);
+        MSG_set_state(START_MOIST);
     }
 
     /* Distance measurement */
@@ -63,13 +63,16 @@ void CLI_execute(char *cmd){
         HCSR04_set_state(START);
         MSG_set_state(START_DISTANCE);
     }
+
     /* Quit */
     else if(strcmp(cmd,"x") == 0){
-        MSG_set_state(Quit);
         MOIST_set_state(MOIST_stop_detect);
         HCSR04_set_state(STOP);
+        MSG_set_state(Quit);
     }
+    
+    /* Invalid Command Received */
     else {
-        USART_print("Invalid command\n");
+        MSG_set_state(Invalid);
     }
 }
