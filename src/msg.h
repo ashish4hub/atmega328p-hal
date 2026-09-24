@@ -11,10 +11,11 @@
 typedef enum{
     Idle,
     Quit,
+    Invalid,
     START_DISTANCE,
     STOP_DISTANCE,
-    START_ADC,
-    STOP_ADC,
+    START_MOIST,
+    STOP_MOIST,
     LED_ON,
     LED_OFF,
     RAMP_START,

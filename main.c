@@ -6,10 +6,9 @@
 
 int main(void){
 
-    USART_init(9600);                 // UART initialization at 9600 BUAD 
-    //pwm_init(1000,pwm_TIMER1);       // Frequency = 1000 and TIMER1 PWM initialization
-    timer_init();                   // TIMER0 initialization for timing (counting)
-    HCSR04_init();                 // HCSR04 initialization 
+    USART_init(9600);                   // UART initialization at 9600 BUAD 
+    timer_init();                     // TIMER0 initialization for timing (counting)
+    HCSR04_init();                   // HCSR04 initialization 
 
     /* ADC Configuration */
     ADC_config_t adc_config = {
@@ -28,7 +27,7 @@ int main(void){
 
         CLI_process();
         HCSR04_src();
-        adc_src();
+        MOIST_src();
         pwm_src();
         led_src();
         MSG_src();
