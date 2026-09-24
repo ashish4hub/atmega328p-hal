@@ -62,13 +62,18 @@ void MOIST_src(void){
 
     switch (state)
     {
+        
+    case MOIST_src_idle:
+    ADC_disable();
+    break;
+
     case MOIST_start_detect:
         ADC_enable();
         MOIST_reading();                       // Moisture Reading 
         break;
     
     case MOIST_stop_detect:
-        ADC_disable();
+        MOIST_set_state(MOIST_idle);          // Idle state
         break;
     }
 }

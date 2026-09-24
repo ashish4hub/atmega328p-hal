@@ -6,6 +6,7 @@
 
 /* Work state */
 typedef enum{
+    MOIST_src_idle,
     MOIST_start_detect,
     MOIST_stop_detect
 }MOIST_work_state;
