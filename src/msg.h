@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 /* State */
-typedef enum{
+typedef enum {
     Idle,
     Quit,
     Invalid,
