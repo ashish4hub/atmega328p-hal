@@ -17,7 +17,7 @@ The general architecture is:
                 |
                 v
         Hardware Registers
- ```
+```
 
 *The project also contains a UART-based command-line interface for interacting with the firmware during development and hardware testing.*
 
@@ -60,9 +60,8 @@ The general architecture is:
         |        |      |--> servo.h
         |
         |
-        |----> src/
-        |----> CLI/
-        |----> main.c
+        |----> testing/
+        |----> README.md
 ```
 
 ## Target Microcontroller
