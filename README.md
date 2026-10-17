@@ -726,9 +726,21 @@ while(1)
 }
 ```
 
-# Command-Line Interface
-The project includes a UART-based command-line interface.
-The CLI provides an interactive way to communicate with the firmware from a serial terminal.
+# Testing `testing/`
+The `testing` directory contain a simple application of the drivers for testing purpose.
+The drivers are tested and validated on ATmega328P hardware setup.
+
+*The application, services and CLI are only developed for testing of the drivers.*
+
+## Service Layer `src/`
+The service layer `src` is built on top of the drivers to be used for different application for testing on hardware.
+
+Service layer is intended for:
+- Implementation of the drivers in applications.
+- Testing and validation of the drivers in real applications.
+
+## CLI `CLI/`
+UART based command line interface is built for testing and validation of the drivers being used in application on hardware.
 
 The CLI is intended for:
 - Peripheral testing
@@ -736,10 +748,6 @@ The CLI is intended for:
 - Runtime interaction
 - Driver verification
 - Debugging
-
-# Service Layer
-## `src/`
-The `src/` contains services/applications built using the drivers. They are not intended to be a part of a usable system, the purpose of developing the services, is to implement, test and interact with the hardware drivers.
 
 
 # Development Workflow
