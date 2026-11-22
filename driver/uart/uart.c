@@ -14,6 +14,13 @@
 
 #define F_CPU 16000000UL
 
+#define Tx_buffer_size 64
+#define Rx_buffer_size 64
+#define line_size 32
+
+#include<avr/io.h>
+#include<avr/interrupt.h>
+
 #include "uart.h"
 
 volatile char RX_buffer[Rx_buffer_size];
