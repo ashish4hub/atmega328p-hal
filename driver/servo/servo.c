@@ -3,7 +3,8 @@
 /*
 -------------------------------Hardware Configuration & Calculation----------------------
 
-. Pulse generation is intirely handled by timer hardware
+. Pulse generation is scheduled by timer
+. The ISR internally uses gpio driver to generate the pulse
 . Timer2 configured in CTC mode with prescaler 8
 . 16 MHz / 8 = 2 MHz
 . [us = MicroSecond, ms = MilliSecond]
@@ -17,7 +18,7 @@
 ------------------------------------------API Usage-----------------------------------------
 
 . servo_init(); : Initialize Timer2 with the required configuration [CTC Mode, Presacler, Output Compare Interrupt, Top value].
-. servo_move_step(); : Set servo pin (any digital I/O Pin) and Step or Pulse duration in ms.
+. servo_move_step(); : Set servo pin (any digital I/O Pin) and Step [Required pulse duration in microseconds 1 step = 100 microseconds pulse].
 
 */
 
